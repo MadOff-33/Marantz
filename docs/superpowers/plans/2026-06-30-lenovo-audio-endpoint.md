@@ -473,7 +473,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/gmediarender -f Marantz-Lenovo-DLNA --gstout-audiosink=alsasink --gstout-audiodevice=behringer
+ExecStart=<absolute-path-to-gmediarender> -f Marantz-Lenovo-DLNA --gstout-audiosink=alsasink --gstout-audiodevice=behringer
 Restart=on-failure
 RestartSec=5
 
@@ -481,7 +481,7 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
-If the binary is in `/usr/local/bin/gmediarender`, use that full path instead.
+Use the exact full path reported by `command -v gmediarender`, either `/usr/bin/gmediarender` for the package install or `/usr/local/bin/gmediarender` for the source-build fallback, and keep that same path in both the unit file and the write command below.
 
 Run:
 
@@ -495,7 +495,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/gmediarender -f Marantz-Lenovo-DLNA --gstout-audiosink=alsasink --gstout-audiodevice=behringer
+ExecStart=<absolute-path-to-gmediarender> -f Marantz-Lenovo-DLNA --gstout-audiosink=alsasink --gstout-audiodevice=behringer
 Restart=on-failure
 RestartSec=5
 
@@ -573,11 +573,11 @@ Run:
 ssh lenovo-openclaw @'
 sudo ufw disable
 sleep 5
-sudo ufw enable
+sudo ufw --force enable
 '@
 ```
 
-Expected: used only for diagnosis, never left disabled, and outcome documented in the report.
+Expected: non-interactive and used only for diagnosis, never left disabled, with the outcome documented in the report.
 
 - [ ] **Step 3: Validate service handoff**
 
