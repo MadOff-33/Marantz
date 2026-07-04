@@ -1,0 +1,53 @@
+# =====================================================================
+# project_manifest.yaml — Marantz
+# Source de vérité pour la synchro Notion (Notion_Knowledge_OS).
+# AUCUN SECRET ICI. Chaque entité a une "key" stable.
+# =====================================================================
+id: marantz-audio-endpoint
+name: Marantz
+description: >
+  Endpoint audio Lenovo/Ubuntu vers ampli Marantz : Spotify Connect et
+  renderer DLNA sur le même endpoint ALSA (hôte lenovo-openclaw).
+  Dépôt de design validé, plan d'exécution et notes d'intervention.
+status: active
+owner: Michael Introligator
+category: perso
+tags: [audio, alsa, spotify-connect, dlna, ubuntu]
+
+repo:
+  type: github
+  path: https://github.com/MadOff-33/Marantz
+  default_branch: master
+
+stack:
+  - Documentation / runbook
+  - Ubuntu (cible lenovo-openclaw)
+  - ALSA
+  - Spotify Connect
+  - DLNA
+
+launch_commands: []
+
+test_commands: []
+
+ai_modules: []
+
+resume_prompt: |
+  Tu reprends Marantz (endpoint audio Lenovo/Ubuntu : Spotify Connect + DLNA
+  sur le même endpoint ALSA, sortie vers ampli Marantz).
+  Commencer en LECTURE SEULE. Lire README.md, docs/ et notes/ avant toute action.
+  Toute intervention sur l'hôte lenovo-openclaw exige un GO explicite.
+  Proposer un plan court, montrer le diff, commit après validation.
+
+decisions: []
+
+risks: []
+
+sprints: []
+
+# Motifs de fichiers sensibles : PRÉSENCE détectée uniquement, contenu jamais lu.
+sensitive_files_hints:
+  - .env
+  - .env.bak_*
+  - "*.pem"
+  - "*.key"
