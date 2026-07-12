@@ -9,7 +9,7 @@ description: >
   Endpoint audio Lenovo/Ubuntu vers ampli Marantz : Spotify Connect et
   renderer DLNA sur le même endpoint ALSA (hôte lenovo-openclaw).
   Dépôt de design validé, plan d'exécution et notes d'intervention.
-status: active
+status: archived
 owner: Michael Introligator
 category: perso
 tags: [audio, alsa, spotify-connect, dlna, ubuntu]
@@ -39,7 +39,13 @@ resume_prompt: |
   Toute intervention sur l'hôte lenovo-openclaw exige un GO explicite.
   Proposer un plan court, montrer le diff, commit après validation.
 
-decisions: []
+decisions:
+  - key: archive-2026-07-12
+    title: >-
+      Décision propriétaire (2026-07-12) : projet Marantz archivé — objectif
+      atteint (endpoint audio validé), aucune migration WSL, source Windows
+      conservée telle quelle avec ses notes locales.
+    status: Validée
 
 risks: []
 
