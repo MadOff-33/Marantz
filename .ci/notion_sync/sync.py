@@ -14,6 +14,8 @@ Principes :
     création. Si tu valides une décision ou fermes un risque DANS Notion, la
     synchro ne l'écrase pas.
   * Journal : une ligne par exécution (qui / quand / commit / déclencheur / résultat).
+  * Docs : la section `docs:` du manifeste remonte dans la base Procédures
+    (clé stable `<project>::doc:<key>`), une page par document versionné.
 
 Env :
   NOTION_TOKEN   (secret) — jeton d'intégration interne Notion. Sans lui : DRY-RUN.
@@ -261,6 +263,15 @@ def main() -> int:
             props, _ = security.sanitize(props)
             n.upsert("procedures", f"{pid}::prompt:resume", props,
                      children=[para(m["resume_prompt"])])
+
+        # ---- Docs (documentation versionnée -> Procédures) ------------------
+        for d in m.get("docs", []):
+            props = {"Titre": p_title(d["title"]), "Projet": rel,
+                     "Type": p_select(d.get("kind", "doc")),
+                     "Criticité": p_select("normal")}
+            props, _ = security.sanitize(props)
+            n.upsert("procedures", f"{pid}::doc:{d['key']}", props,
+                     children=[para(f"Fichier : {d.get('path', '')}")])
 
         # ---- Sprints --------------------------------------------------------
         for s in m.get("sprints", []):

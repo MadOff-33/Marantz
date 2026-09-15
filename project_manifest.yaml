@@ -28,6 +28,13 @@ stack:
 
 launch_commands: []
 
+# Documentation versionnée — remontée dans la base Notion « Procédures ».
+docs:
+  - key: audio-endpoint-report
+    title: "Lenovo Audio Endpoint — Intervention Report"
+    path: docs/audio-endpoint-report.md
+    kind: runbook
+
 test_commands: []
 
 ai_modules: []
