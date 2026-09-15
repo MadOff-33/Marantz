@@ -20,4 +20,4 @@ Local project workspace for the Lenovo Ubuntu audio endpoint intervention.
 - Spotify Connect published as `Marantz-Lenovo` and validated from iPhone
 - DLNA renderer published as `Marantz-Lenovo-DLNA` and validated from DS Audio
 - Home Assistant and OpenClaw remained reachable during the intervention
-- Remote intervention report available on the Lenovo at `/home/mike/audio-endpoint-report.md`
+- Detailed intervention report versioned at `docs/audio-endpoint-report.md` (imported from the Lenovo host and anonymized for the public repo)
