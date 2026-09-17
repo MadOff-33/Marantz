@@ -40,6 +40,15 @@ test_commands: []
 ai_modules: []
 
 resume_prompt: |
+  Tu reprends Marantz à partir de son état actuel.
+  Commence par .workflow/workflow-system/WORKFLOW.md et exécute
+  .workflow/workflow-system/procedures/00-session-preflight.md.
+  Suis .workflow/workflow-system/ROUTER.md, classe la demande R0 à R5 et charge réellement
+  les SKILL.md requis par la route avant toute action.
+  Lis ensuite CONTEXT.md et, si présent, D:\CLAUDE\CLAUDE-COWORK\PROJETS\Marantz.
+  Indique où le projet s'est arrêté, la route et les skills chargés, les blocages et la prochaine étape.
+
+  Contexte de reprise déjà défini :
   Tu reprends Marantz (endpoint audio Lenovo/Ubuntu : Spotify Connect + DLNA
   sur le même endpoint ALSA, sortie vers ampli Marantz).
   Commencer en LECTURE SEULE. Lire README.md, docs/ et notes/ avant toute action.
