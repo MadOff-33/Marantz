@@ -43,6 +43,11 @@ DRY_RUN=true python sync.py     # affiche le plan, n'envoie rien
 ```
 
 ## Ajouter un nouveau projet
-Réutiliser ce dossier `.ci/notion_sync/` dans l'autre repo, adapter
-`project_manifest.yaml`, et garder le même `notion_databases.yml` (les bases
-Notion sont communes à tous les projets).
+Guide complet + script d'onboarding automatique :
+**`Notion_Knowledge_OS/docs/ONBOARDING_NOUVEAU_PROJET.md`**.
+
+En bref : le token `NOTION_TOKEN` se pose **une fois par repo** (repos personnels,
+pas une organisation), mais le script
+`Notion_Knowledge_OS/tools/notion-sync-onboard.ps1` fait tout (copie du kit +
+workflow, manifeste squelette, dry-run, pose du secret). Garder le même
+`notion_databases.yml` (bases communes) et un `id` unique par repo.
