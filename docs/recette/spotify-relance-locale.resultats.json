@@ -1,0 +1,26 @@
+{
+ "mission": "spotify-relance-locale",
+ "hote": "PCMIKE",
+ "date": "2026-11-01T18:33",
+ "criteres": "tous",
+ "etapes": [
+  {
+   "critere": "C1",
+   "nom": "ligne export LC_ALL=C avant UNIT",
+   "resultat": true,
+   "detail": "ok"
+  },
+  {
+   "critere": "C2",
+   "nom": "test non-régression locale fr",
+   "resultat": true,
+   "detail": "ok"
+  },
+  {
+   "critere": "C3",
+   "nom": "suite existante spotify-relance",
+   "resultat": true,
+   "detail": "ok"
+  }
+ ]
+}

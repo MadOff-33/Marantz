@@ -1,0 +1,52 @@
+{
+  "mission": "spotify-relance-locale",
+  "criteres": [
+    {
+      "id": "C1",
+      "description": "La ligne 'export LC_ALL=C  # parsing numérique indépendant de la locale (fr_FR : virgule décimale)' figure dans scripts/spotify-relance.sh immédiatement avant 'UNIT=raspotify'.",
+      "etapes": [
+        {
+          "nom": "ligne export LC_ALL=C avant UNIT",
+          "env": "local",
+          "commande": "grep -B1 '^UNIT=raspotify$' scripts/spotify-relance.sh | grep -cF 'export LC_ALL=C  # parsing numérique indépendant de la locale (fr_FR : virgule décimale)'",
+          "code_attendu": 0,
+          "sortie_contient": ["1"],
+          "timeout": 30,
+          "go_humain": false
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "description": "Test de non-régression vert : tests/test_spotify_relance_locale.py passe (uptime décimal 3397902.75 sous fr_FR.UTF-8, pas de code 3 / « uptime invalide »).",
+      "etapes": [
+        {
+          "nom": "test non-régression locale fr",
+          "env": "local",
+          "commande": "PYTHONDONTWRITEBYTECODE=1 .tmp/venv/bin/python -m pytest -q -p no:cacheprovider \"tests/test_spotify_relance_locale.py\"",
+          "code_attendu": 0,
+          "sortie_contient": ["passed"],
+          "sortie_absente": ["Traceback"],
+          "timeout": 300,
+          "go_humain": false
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "description": "Suite existante du script verte : tests/test_spotify_relance.py passe sans régression.",
+      "etapes": [
+        {
+          "nom": "suite existante spotify-relance",
+          "env": "local",
+          "commande": "PYTHONDONTWRITEBYTECODE=1 .tmp/venv/bin/python -m pytest -q -p no:cacheprovider \"tests/test_spotify_relance.py\"",
+          "code_attendu": 0,
+          "sortie_contient": ["passed"],
+          "sortie_absente": ["Traceback"],
+          "timeout": 300,
+          "go_humain": false
+        }
+      ]
+    }
+  ]
+}

@@ -20,6 +20,7 @@
 
 set -u
 
+export LC_ALL=C  # parsing numérique indépendant de la locale (fr_FR : virgule décimale)
 UNIT=raspotify
 GRACE=120
 COOLDOWN=600
