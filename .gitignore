@@ -1,2 +1,4 @@
 # Fichiers locaux non versionnés
 .freebuff/
+tests/tmp/
+tests/__pycache__/
