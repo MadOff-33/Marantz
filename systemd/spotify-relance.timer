@@ -1,0 +1,11 @@
+[Unit]
+Description=Timer du watchdog spotify-relance (verification toutes les 60 s)
+
+[Timer]
+OnBootSec=120s
+OnUnitActiveSec=60s
+AccuracySec=1s
+# Non persistant : aucun rattrapage apres arret du timer ou reboot.
+
+[Install]
+WantedBy=timers.target
