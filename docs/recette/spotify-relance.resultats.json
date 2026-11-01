@@ -1,0 +1,38 @@
+{
+ "mission": "spotify-relance",
+ "hote": "PCMIKE",
+ "date": "2026-11-01T17:32",
+ "criteres": "tous",
+ "etapes": [
+  {
+   "critere": "C1",
+   "nom": "test détection local",
+   "resultat": true,
+   "detail": "ok"
+  },
+  {
+   "critere": "C2",
+   "nom": "test gardes local",
+   "resultat": true,
+   "detail": "ok"
+  },
+  {
+   "critere": "C3",
+   "nom": "syntaxe Bash et shellcheck conditionnel local",
+   "resultat": true,
+   "detail": "ok"
+  },
+  {
+   "critere": "C4",
+   "nom": "test unités local",
+   "resultat": true,
+   "detail": "ok"
+  },
+  {
+   "critere": "C5",
+   "nom": "test périmètre local",
+   "resultat": true,
+   "detail": "ok"
+  }
+ ]
+}

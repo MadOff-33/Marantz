@@ -169,6 +169,23 @@ def test_detection_autre_invocation_exclue(fx):
     assert fx.restarts() == ["restart raspotify"]
 
 
+def test_detection_invocation_nouvelle_saine_pas_de_relance(fx):
+    # Defaut 2 : apres relance, l'ancien defaut (invocation precedente) ne
+    # doit plus etre vu ; nouvelle invocation saine -> aucune relance meme
+    # a long terme (le journal filtre par invocation ne contient plus le defaut).
+    fx.set_journal([SIG_SESSION, SIG_DEALER])
+    fx.run()
+    fx.set_uptime(1300)
+    assert fx.run().returncode == 0
+    assert fx.restarts() == ["restart raspotify"]
+    # nouvelle invocation, journal de cette invocation : sain (zeroconf seul)
+    fx.invoc.write_text("inv2\n")
+    fx.set_journal([SIG_ZEROCONF])
+    fx.set_uptime(50000)
+    assert fx.run().returncode == 0
+    assert fx.restarts() == ["restart raspotify"]
+
+
 def test_detection_autre_boot_exclu(fx):
     fx.set_journal([SIG_SESSION])
     fx.run()
@@ -364,6 +381,23 @@ def test_guards_echec_relance_code_non_nul(fx_fail):
 
 # -------------------------------------------------------------------- units
 
+def test_units_service_preservation_etat():
+    # Defaut 1 : sans preservation, /run/spotify-relance est vide a chaque
+    # passage du oneshot : grace et cooldown perdus, aucune relance jamais.
+    text = SERVICE.read_text()
+    assert "RuntimeDirectoryPreserve=yes" in text
+    assert "RuntimeDirectoryMode=0700" in text
+
+
+def test_units_service_durcissement():
+    text = SERVICE.read_text()
+    for opt in ("NoNewPrivileges=yes", "ProtectSystem=strict", "ProtectHome=yes",
+                "PrivateTmp=yes", "ProtectKernelTunables=yes",
+                "ProtectControlGroups=yes", "RestrictAddressFamilies=AF_UNIX",
+                "ReadWritePaths=/run/spotify-relance"):
+        assert opt in text, opt
+
+
 def test_units_service_texte():
     text = SERVICE.read_text()
     assert "Type=oneshot" in text
@@ -431,6 +465,18 @@ def test_scope_script_statique():
     assert '"$UNIT"' in text
     for banned in PROTECTED:
         assert banned not in text.lower(), banned
+
+
+def test_scope_script_journal_limite_invocation():
+    # Defaut 2 : chaque lecture journalctl (initiale et reverification) doit
+    # filtrer par l'invocation courante de l'unite ; aucun appel non filtre.
+    text = SCRIPT.read_text()
+    filtered = 'journalctl -u "$UNIT" -b _SYSTEMD_INVOCATION_ID="$INVOCATION" --no-pager --output=cat'
+    assert text.count(filtered) == 2, "deux lectures journalctl filtrees attendues"
+    # la forme non filtree du boot entier ne doit plus exister
+    assert 'journalctl -u "$UNIT" -b --no-pager' not in text
+    # liberation du verrou sur signaux, pas seulement EXIT
+    assert "trap 'exit 0' INT TERM HUP" in text
 
 
 def sh_blocks():

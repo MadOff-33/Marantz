@@ -29,27 +29,38 @@ Si le hostname n'est pas `48sab`, ne rien faire et vérifier la cible.
 
 ## Installation (sudo, sur 48sab)
 
+Chaque bloc tourne dans un sous-shell `( … )` : un échec n'y ferme jamais
+le shell interactif de l'humain. L'installation est idempotente : seules les
+collisions avec un fichier **différent** sont refusées ; réinstaller les
+mêmes contenus est sans effet.
+
 ```sh
 # depuis la racine du dépôt Marantz sur lenovo-openclaw
-# garde : mauvaise machine -> STOP avant toute écriture
-[ "$(hostname)" = "48sab" ] || { echo "hostname inattendu: $(hostname)"; exit 1; }
+(
+  # garde : mauvaise machine -> STOP avant toute écriture
+  [ "$(hostname)" = "48sab" ] || { echo "hostname inattendu: $(hostname)"; exit 1; }
 
-# garde : collisions -> STOP avant d'écraser un fichier existant différent
-for f in /usr/local/sbin/spotify-relance.sh \
-         /etc/systemd/system/spotify-relance.service \
-         /etc/systemd/system/spotify-relance.timer \
-         /usr/local/share/doc/spotify-relance-runbook.md; do
-  [ -e "$f" ] && { echo "collision: $f existe deja"; exit 1; }
-done
+  # garde : collision avec un fichier existant DIFFERENT -> STOP
+  for pair in \
+    "scripts/spotify-relance.sh /usr/local/sbin/spotify-relance.sh" \
+    "systemd/spotify-relance.service /etc/systemd/system/spotify-relance.service" \
+    "systemd/spotify-relance.timer /etc/systemd/system/spotify-relance.timer" \
+    "docs/runbooks/spotify-relance.md /usr/local/share/doc/spotify-relance-runbook.md"; do
+    set -- $pair
+    if [ -e "$2" ] && ! cmp -s "$1" "$2"; then
+      echo "collision: $2 existe et differe"; exit 1
+    fi
+  done
 
-sudo install -m 0755 scripts/spotify-relance.sh /usr/local/sbin/spotify-relance.sh
-sudo install -d -m 0755 /usr/local/share/doc
-sudo install -m 0644 docs/runbooks/spotify-relance.md /usr/local/share/doc/spotify-relance-runbook.md
-sudo install -m 0644 systemd/spotify-relance.service /etc/systemd/system/spotify-relance.service
-sudo install -m 0644 systemd/spotify-relance.timer /etc/systemd/system/spotify-relance.timer
-sudo systemctl daemon-reload
-sudo systemctl enable --now spotify-relance.timer
-systemctl status spotify-relance.timer --no-pager
+  sudo install -m 0755 scripts/spotify-relance.sh /usr/local/sbin/spotify-relance.sh
+  sudo install -d -m 0755 /usr/local/share/doc
+  sudo install -m 0644 docs/runbooks/spotify-relance.md /usr/local/share/doc/spotify-relance-runbook.md
+  sudo install -m 0644 systemd/spotify-relance.service /etc/systemd/system/spotify-relance.service
+  sudo install -m 0644 systemd/spotify-relance.timer /etc/systemd/system/spotify-relance.timer
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now spotify-relance.timer
+  systemctl status spotify-relance.timer --no-pager
+) || echo "installation interrompue : voir messages ci-dessus"
 ```
 
 Première vérification 120 s après le boot du timer, puis toutes les 60 s.
@@ -57,22 +68,26 @@ Vérifier le journal : `sudo journalctl -u spotify-relance.service -b --no-pager
 
 ## Désinstallation (sudo, sur 48sab)
 
+Idempotente : chaque `rm -f` est rejouable, un second passage ne fait rien.
+
 ```sh
 # depuis la racine du dépôt Marantz sur lenovo-openclaw
-# garde : mauvaise machine -> STOP
-[ "$(hostname)" = "48sab" ] || { echo "hostname inattendu: $(hostname)"; exit 1; }
+(
+  # garde : mauvaise machine -> STOP
+  [ "$(hostname)" = "48sab" ] || { echo "hostname inattendu: $(hostname)"; exit 1; }
 
-sudo systemctl disable --now spotify-relance.timer
-sudo systemctl stop spotify-relance.service
-sudo rm -f /etc/systemd/system/spotify-relance.timer
-sudo rm -f /etc/systemd/system/spotify-relance.service
-sudo rm -f /usr/local/sbin/spotify-relance.sh
-sudo rm -f /usr/local/share/doc/spotify-relance-runbook.md
-# etat runtime du watchdog (efface de toute facon au reboot)
-sudo rm -rf /run/spotify-relance
-sudo systemctl daemon-reload
-# raspotify reste intact : aucune action sur lui ici
-systemctl status raspotify --no-pager
+  sudo systemctl disable --now spotify-relance.timer
+  sudo systemctl stop spotify-relance.service
+  sudo rm -f /etc/systemd/system/spotify-relance.timer
+  sudo rm -f /etc/systemd/system/spotify-relance.service
+  sudo rm -f /usr/local/sbin/spotify-relance.sh
+  sudo rm -f /usr/local/share/doc/spotify-relance-runbook.md
+  # etat runtime du watchdog (efface de toute facon au reboot)
+  sudo rm -rf /run/spotify-relance
+  sudo systemctl daemon-reload
+  # raspotify reste intact : aucune action sur lui ici
+  systemctl status raspotify --no-pager
+) || echo "desinstallation interrompue : voir messages ci-dessus"
 ```
 
 ## Comportement et limites

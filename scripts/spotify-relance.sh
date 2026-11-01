@@ -4,7 +4,8 @@
 # Relance uniquement l'unite raspotify quand la session librespot est morte
 # sans arret du processus : signatures librespot session « Connection to
 # server closed. » et dealer « Websocket peer does not respond. » sans
-# « Authenticated as » ulterieur dans le journal du boot courant. Grace de
+# « Authenticated as » ulterieur dans le journal du boot courant limite a
+# l'invocation en cours de l'unite. Grace de
 # 120 s depuis la premiere observation du defaut non resolu ; minimum 600 s
 # entre tentatives (memes echouees), horodatage par uptime ecrit avant
 # action. Unite inactive laissee inactive. Observation impossible ou etat
@@ -83,7 +84,9 @@ EOF_SHOW
   [ -n "${INVOCATION:-}" ]  || fail 'invocation illisible' 3
   BOOT=$(cat /proc/sys/kernel/random/boot_id 2>/dev/null) || fail 'boot id illisible' 3
   read -r UP _ < /proc/uptime || fail 'uptime illisible' 3
-  JOURNAL=$(timeout 30 journalctl -u "$UNIT" -b --no-pager --output=cat 2>/dev/null) \
+  # Journal limite au boot ET a l'invocation courante : un defaut d'une
+  # invocation anterieure (avant relance) ne doit plus etre vu.
+  JOURNAL=$(timeout 30 journalctl -u "$UNIT" -b _SYSTEMD_INVOCATION_ID="$INVOCATION" --no-pager --output=cat 2>/dev/null) \
     || fail 'lecture journal impossible' 3
 fi
 
@@ -156,7 +159,10 @@ fi
 # --- Verrou exclusif --------------------------------------------------------
 
 mkdir "$LOCK_DIR" 2>/dev/null || exit 0
+# Liberation meme sur signal (systemd TimeoutStartSec, SIGTERM) : sinon le
+# verrou orphelin bloquerait silencieusement tous les passages suivants.
 trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
+trap 'exit 0' INT TERM HUP
 
 # --- Grille d'etat : invocation/boot differente => defaut perime ------------
 
@@ -231,7 +237,7 @@ $SHOW_OUT2
 EOF_SHOW2
   [ -n "$ACTIVE2" ]     || fail 'relecture etat impossible' 3
   [ -n "$INVOCATION2" ] || fail 'relecture invocation impossible' 3
-  JOURNAL2=$(timeout 30 journalctl -u "$UNIT" -b --no-pager --output=cat 2>/dev/null) \
+  JOURNAL2=$(timeout 30 journalctl -u "$UNIT" -b _SYSTEMD_INVOCATION_ID="$INVOCATION" --no-pager --output=cat 2>/dev/null) \
     || fail 'relecture journal impossible' 3
 fi
 

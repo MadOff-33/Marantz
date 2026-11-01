@@ -18,6 +18,7 @@ Autre **fait fourni par l'humain** : branche courante zoo/marantz-sante avec mil
 | 2026-11-01 | architect | Cadrage : watchdog journal par invocation, grâce 120 s, timer 60 s, anti-boucle 600 s ; plan et matrice ci-dessous. |
 | 2026-11-01 | code, sous-tâche documentaire | Création de la recette JSON uniquement, cinq critères locaux ; aucune commande ni implémentation. |
 | 2026-11-01 | architect | Relecture de la recette : correspondance C1–C5, champs repris de l'exemple, aucun accès distant ; validation exécutable différée. |
+| 2026-11-01 | code (impl-corr) | Retour relecture ko (journal #21) corrigé : défaut 1 — `RuntimeDirectoryPreserve=yes` (choix retenu plutôt que StateDirectory car l'état reste par-boot dans tmpfs : préservé entre passages, purgé au redémarrage, sans persistance disque inutile) + `RuntimeDirectoryMode=0700` ; défaut 2 — les deux lectures journalctl filtrent par `_SYSTEMD_INVOCATION_ID` de l'unité ; trap verrou étendu à INT/TERM/HUP ; durcissement service (NoNewPrivileges, ProtectSystem=strict, ProtectHome, PrivateTmp, ProtectKernelTunables, ProtectControlGroups, RestrictAddressFamilies=AF_UNIX, ReadWritePaths=/run/spotify-relance) ; runbook en sous-shells sans exit interactif, installation idempotente (collision seulement si contenu différent). Tests de régression ajoutés : préservation d'état, durcissement, filtre invocation (2 lectures), trap signaux, scénario nouvelle invocation saine sans relance. Preuves : bash -n : 0 ; pytest 38 passed ; recette C1–C5 PASSE (exit 0). |
 
 ## Sources vérifiées par lecture
 

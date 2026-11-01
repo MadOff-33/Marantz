@@ -11,7 +11,20 @@ ExecStart=/usr/local/sbin/spotify-relance.sh
 # Bornes : un passage court, jamais de second essai automatique.
 TimeoutStartSec=90
 Nice=10
-# Etat borne au boot courant, conserve entre passages du timer,
-# efface au redemarrage (tmpfs) : grace et cooldown par boot.
+# Etat borne au boot courant (tmpfs, efface au redemarrage) mais conserve
+# entre les passages du timer : sans preservation, grace et cooldown seraient
+# perdus a chaque arret de l'unite oneshot et le watchdog ne relancerait jamais.
 RuntimeDirectory=spotify-relance
-RuntimeDirectoryMode=0755
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes
+# Ecriture uniquement dans le repertoire d'etat ; lecture du journal et
+# D-Bus (socket unix) pour systemctl restent possibles.
+ReadWritePaths=/run/spotify-relance
+# Durcissement : service root sans privileges inutiles.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX
