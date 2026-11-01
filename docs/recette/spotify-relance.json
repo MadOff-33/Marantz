@@ -1,0 +1,85 @@
+{
+  "mission": "spotify-relance",
+  "criteres": [
+    {
+      "id": "C1",
+      "description": "Détection des signatures librespot, récupération de l'état et de l'invocation, relance et respect du silence : les tests du groupe detection passent en local.",
+      "etapes": [
+        {
+          "nom": "test détection local",
+          "env": "local",
+          "commande": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider \"tests/test_spotify_relance.py\" -k detection",
+          "code_attendu": 0,
+          "sortie_contient": ["passed"],
+          "sortie_absente": ["Traceback"],
+          "timeout": 300,
+          "go_humain": false
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "description": "Gardes grâce, cooldown, concurrence et échecs : les tests du groupe guards passent en local.",
+      "etapes": [
+        {
+          "nom": "test gardes local",
+          "env": "local",
+          "commande": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider \"tests/test_spotify_relance.py\" -k guards",
+          "code_attendu": 0,
+          "sortie_contient": ["passed"],
+          "sortie_absente": ["Traceback"],
+          "timeout": 300,
+          "go_humain": false
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "description": "Syntaxe Bash du script et shellcheck lorsque l'outil est présent ; en son absence, contrôle Bash seul, jamais un échec masqué.",
+      "etapes": [
+        {
+          "nom": "syntaxe Bash et shellcheck conditionnel local",
+          "env": "local",
+          "commande": "bash -n \"scripts/spotify-relance.sh\" && if command -v shellcheck >/dev/null 2>&1; then shellcheck \"scripts/spotify-relance.sh\" && printf '%s\\n' 'SPOTIFY_SYNTAX_OK'; else printf '%s\\n' 'shellcheck indisponible : controle Bash seul' 'SPOTIFY_SYNTAX_OK'; fi",
+          "code_attendu": 0,
+          "sortie_contient": ["SPOTIFY_SYNTAX_OK"],
+          "sortie_absente": [],
+          "timeout": 300,
+          "go_humain": false
+        }
+      ]
+    },
+    {
+      "id": "C4",
+      "description": "Unités systemd : contrôle textuel systématique et systemd-analyze verify sur copies sous tests/tmp avec chemin ExecStart local lorsque l'outil est disponible ; l'absence de l'outil ne fait retomber que sur le contrôle textuel, un verify KO n'est jamais masqué.",
+      "etapes": [
+        {
+          "nom": "test unités local",
+          "env": "local",
+          "commande": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider \"tests/test_spotify_relance.py\" -k units",
+          "code_attendu": 0,
+          "sortie_contient": ["passed"],
+          "sortie_absente": ["Traceback"],
+          "timeout": 300,
+          "go_humain": false
+        }
+      ]
+    },
+    {
+      "id": "C5",
+      "description": "Périmètre strict : script, unités et blocs exécutables du runbook uniquement, traces limitées à raspotify.service, installation et désinstallation exactes, gestion des collisions et du hostname.",
+      "etapes": [
+        {
+          "nom": "test périmètre local",
+          "env": "local",
+          "commande": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider \"tests/test_spotify_relance.py\" -k scope",
+          "code_attendu": 0,
+          "sortie_contient": ["passed"],
+          "sortie_absente": ["Traceback"],
+          "timeout": 300,
+          "go_humain": false
+        }
+      ]
+    }
+  ]
+}

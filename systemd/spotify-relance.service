@@ -1,0 +1,30 @@
+[Unit]
+Description=Watchdog de relance raspotify apres perte de session librespot
+Documentation=file:/usr/local/share/doc/spotify-relance-runbook.md
+After=raspotify.service
+# Aucune dependance demarrant raspotify : ce service n'exige ni ne tire
+# l'unite surveillee, il l'observe seulement.
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/spotify-relance.sh
+# Bornes : un passage court, jamais de second essai automatique.
+TimeoutStartSec=90
+Nice=10
+# Etat borne au boot courant (tmpfs, efface au redemarrage) mais conserve
+# entre les passages du timer : sans preservation, grace et cooldown seraient
+# perdus a chaque arret de l'unite oneshot et le watchdog ne relancerait jamais.
+RuntimeDirectory=spotify-relance
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes
+# Ecriture uniquement dans le repertoire d'etat ; lecture du journal et
+# D-Bus (socket unix) pour systemctl restent possibles.
+ReadWritePaths=/run/spotify-relance
+# Durcissement : service root sans privileges inutiles.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX
