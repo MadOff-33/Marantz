@@ -20,6 +20,8 @@ Autre **fait fourni par l'humain** : branche courante zoo/marantz-sante avec mil
 | 2026-11-01 | architect | Relecture de la recette : correspondance C1–C5, champs repris de l'exemple, aucun accès distant ; validation exécutable différée. |
 | 2026-11-01 | code (impl-corr) | Retour relecture ko (journal #21) corrigé : défaut 1 — `RuntimeDirectoryPreserve=yes` (choix retenu plutôt que StateDirectory car l'état reste par-boot dans tmpfs : préservé entre passages, purgé au redémarrage, sans persistance disque inutile) + `RuntimeDirectoryMode=0700` ; défaut 2 — les deux lectures journalctl filtrent par `_SYSTEMD_INVOCATION_ID` de l'unité ; trap verrou étendu à INT/TERM/HUP ; durcissement service (NoNewPrivileges, ProtectSystem=strict, ProtectHome, PrivateTmp, ProtectKernelTunables, ProtectControlGroups, RestrictAddressFamilies=AF_UNIX, ReadWritePaths=/run/spotify-relance) ; runbook en sous-shells sans exit interactif, installation idempotente (collision seulement si contenu différent). Tests de régression ajoutés : préservation d'état, durcissement, filtre invocation (2 lectures), trap signaux, scénario nouvelle invocation saine sans relance. Preuves : bash -n : 0 ; pytest 38 passed ; recette C1–C5 PASSE (exit 0). |
 
+| 2026-11-01 | integrateur | Recette d'integration C1-C5 PASSE (exit 0, venv pytest) ; PR Forgejo #1 creee et fusionnee en squash : master 9474ff3 (contenu b2e537e, branche zoo/spotify-relance). Journal #4 du worktree reporte en base principale (#23). |
+
 ## Sources vérifiées par lecture
 
 - [Workflow](../../.workflow/workflow-system/WORKFLOW.md:7) et [préflight](../../.workflow/workflow-system/procedures/00-session-preflight.md:5) : isolation avant contexte métier ; commandes différées, car hors capacités et mandat de cette phase. Aucun autre worktree n'est déclaré résolu. Pas de lecture du contexte métier ni de l'état d'une autre mission.
@@ -65,16 +67,5 @@ Aucune commande exécutée : codes de sortie non disponibles. Lecture et écritu
 
 Le préflight Git/runtime et la lecture du journal nécessitent un terminal : reportés, pas supposés réussis. La création du worktree est reportée à l'exécution ; les documents préparés dans le checkout courant ne doivent jamais justifier d'y travailler sur le code. La restriction architecte autorise seulement Markdown : transcription du JSON déléguée à un mode autorisé, mandat limité à ce seul document, sans commande ni implémentation.
 
-État : trois livrables documentaires créés ; cohérence contrôlée par lecture, format de recette non validé par exécution, aucun déploiement effectué. Prochaine étape distincte : reprendre les trois livrables dans le worktree dédié, valider la recette puis appliquer les lots ci-dessus sous le GO déjà acquis ; ne pas redemander confirmation ni refaire le diagnostic humain.
+État : FUSIONNÉ. PR Forgejo #1 (zoo/spotify-relance → master), squash 9474ff3 sur master. Recette d'intégration C1–C5 PASSE (exit 0) ; relecteur APPROUVÉ (journal #22) ; pytest 38 passed. Prochaine étape : action humaine S1 de .zoo-work/HUMAN_ACTIONS.md — déployer le watchdog sur lenovo-openclaw (48sab) via le bloc « Installation (sudo, sur 48sab) » du runbook docs/runbooks/spotify-relance.md tel que fusionné sur master (9474ff3).
 
-## Entrée journal à transmettre au prochain mode avec terminal
-
-Paramètres : --mission spotify-relance --lot cadrage --role architect --type spec --statut ok
-
-Résumé : cadrage documentaire S ; diagnostic humain acquis ; détection journal par invocation, grâce 120 s, cooldown 600 s ; cinq critères locaux ; code et déploiement non exécutés. Critères : C1 C2 C3 C4 C5. Fichiers : les trois documents indexés ci-dessous. Lire les entrées existantes avant ajout et éviter un doublon. Aucun ajout au journal réalisé dans cette phase.
-
-## Index des livrables
-
-- [Spec et plan de fichiers](../specs/spotify-relance.md)
-- [Recette exécutable locale — cinq critères, validation différée](../recette/spotify-relance.json)
-- [Rapport consolidé](spotify-relance.md)
